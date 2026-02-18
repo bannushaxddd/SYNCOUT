@@ -1,0 +1,1606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SYNCOUT — Sync Program with Anyone</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════════
+   SYNCOUT - Design System
+   Theme: Dark industrial with electric accents
+   Font: Syne (display) + JetBrains Mono (code)
+══════════════════════════════════════════════════ */
+
+:root {
+  --bg:        #0a0a0f;
+  --bg2:       #111118;
+  --bg3:       #1a1a24;
+  --border:    #2a2a3a;
+  --accent:    #00ff88;
+  --accent2:   #7c3aed;
+  --accent3:   #06b6d4;
+  --text:      #e8e8f0;
+  --muted:     #6b6b80;
+  --danger:    #ff4757;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-ui:   'Syne', sans-serif;
+  --radius:    8px;
+  --glow:      0 0 20px rgba(0,255,136,0.3);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+  overflow: hidden;
+}
+
+/* ─── LANDING PAGE ───────────────────────────── */
+#landing {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  z-index: 100;
+  overflow: hidden;
+}
+
+#landing::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(124,58,237,0.15) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(0,255,136,0.08) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.landing-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,255,136,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,255,136,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+}
+
+.landing-content {
+  position: relative;
+  text-align: center;
+  z-index: 1;
+  animation: fadeUp 0.8s ease both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.logo-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.logo-icon {
+  width: 52px;
+  height: 52px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  box-shadow: var(--glow);
+}
+
+.logo-text {
+  font-size: 48px;
+  font-weight: 800;
+  letter-spacing: -2px;
+  background: linear-gradient(135deg, #fff 30%, var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.landing-tagline {
+  font-size: 18px;
+  color: var(--muted);
+  margin-bottom: 48px;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+}
+
+.landing-tagline span {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.landing-cards {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 48px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.landing-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 28px;
+  text-align: center;
+  min-width: 140px;
+  transition: all 0.2s;
+}
+
+.landing-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.landing-card-icon { font-size: 28px; margin-bottom: 8px; }
+.landing-card-label {
+  font-size: 12px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.landing-card-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-top: 4px;
+}
+
+.session-box {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 36px;
+  width: 480px;
+  max-width: 90vw;
+  animation: fadeUp 0.8s 0.2s ease both;
+}
+
+.session-tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--bg3);
+  border-radius: var(--radius);
+  padding: 4px;
+  margin-bottom: 24px;
+}
+
+.session-tab {
+  flex: 1;
+  padding: 10px;
+  text-align: center;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  transition: all 0.2s;
+  border: none;
+  background: transparent;
+  font-family: var(--font-ui);
+}
+
+.session-tab.active {
+  background: var(--bg);
+  color: var(--text);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.form-group { margin-bottom: 16px; }
+
+.form-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+  font-family: var(--font-mono);
+}
+
+.form-input {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.form-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(0,255,136,0.1);
+}
+
+.form-input::placeholder { color: var(--muted); }
+
+.btn-primary {
+  width: 100%;
+  padding: 14px;
+  background: var(--accent);
+  color: #0a0a0f;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--font-ui);
+  letter-spacing: 0.5px;
+  transition: all 0.2s;
+  margin-top: 8px;
+}
+
+.btn-primary:hover {
+  background: #00e67a;
+  transform: translateY(-1px);
+  box-shadow: var(--glow);
+}
+
+.btn-primary:active { transform: translateY(0); }
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ─── MAIN EDITOR LAYOUT ─────────────────────── */
+#app {
+  display: none;
+  height: 100vh;
+  flex-direction: column;
+}
+
+#app.visible { display: flex; }
+
+/* ─── TOPBAR ─────────────────────────────────── */
+.topbar {
+  height: 52px;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.topbar-logo {
+  font-size: 18px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #fff, var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.5px;
+  margin-right: 8px;
+}
+
+.session-badge {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.session-badge:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 10px rgba(0,255,136,0.2);
+}
+
+.divider { width: 1px; height: 20px; background: var(--border); }
+
+.lang-select {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.lang-select:focus { border-color: var(--accent); }
+
+.users-strip {
+  display: flex;
+  align-items: center;
+  gap: -4px;
+  margin-left: auto;
+}
+
+.user-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  border: 2px solid var(--bg2);
+  margin-left: -6px;
+  cursor: default;
+  position: relative;
+  transition: transform 0.2s;
+}
+
+.user-avatar:hover { transform: scale(1.2); z-index: 1; }
+
+.user-avatar:first-child { margin-left: 0; }
+
+.connection-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  margin-left: 8px;
+  box-shadow: 0 0 6px rgba(0,255,136,0.5);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.topbar-btn {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 12px;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font-ui);
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.topbar-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ─── MAIN AREA ──────────────────────────────── */
+.main-area {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ─── EDITOR AREA ────────────────────────────── */
+.editor-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+.editor-header {
+  height: 36px;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.file-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.file-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+/* ─── CODE EDITOR ────────────────────────────── */
+.editor-wrapper {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+#code-editor {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--bg);
+  color: #abb2bf;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 1.7;
+  padding: 16px 16px 16px 60px;
+  border: none;
+  outline: none;
+  resize: none;
+  tab-size: 4;
+  white-space: pre;
+  overflow-wrap: normal;
+  overflow: auto;
+  caret-color: var(--accent);
+}
+
+.line-numbers {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 52px;
+  background: var(--bg);
+  border-right: 1px solid var(--border);
+  padding: 16px 8px;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--muted);
+  text-align: right;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Remote cursors */
+.remote-cursor {
+  position: absolute;
+  width: 2px;
+  pointer-events: none;
+  z-index: 10;
+  animation: cursorBlink 1s infinite;
+}
+
+@keyframes cursorBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.remote-cursor-label {
+  position: absolute;
+  top: -20px;
+  left: 0;
+  white-space: nowrap;
+  font-size: 10px;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: #000;
+}
+
+/* ─── SIDEBAR ────────────────────────────────── */
+.sidebar {
+  width: 300px;
+  background: var(--bg2);
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.sidebar-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar-tab {
+  flex: 1;
+  padding: 12px 8px;
+  text-align: center;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+  border: none;
+  background: transparent;
+  font-family: var(--font-ui);
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+}
+
+.sidebar-tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.sidebar-panel { display: none; flex-direction: column; flex: 1; overflow: hidden; }
+.sidebar-panel.active { display: flex; }
+
+/* ─── USERS PANEL ────────────────────────────── */
+.users-panel {
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.users-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+  margin-bottom: 12px;
+  font-family: var(--font-mono);
+}
+
+.user-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: var(--radius);
+  margin-bottom: 6px;
+  background: var(--bg3);
+  border: 1px solid transparent;
+  transition: all 0.2s;
+}
+
+.user-item:hover { border-color: var(--border); }
+
+.user-item-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.user-item-info { flex: 1; min-width: 0; }
+.user-item-name {
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-item-status {
+  font-size: 10px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+}
+
+.user-you-badge {
+  font-size: 9px;
+  font-weight: 700;
+  background: rgba(0,255,136,0.15);
+  color: var(--accent);
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+/* ─── CHAT PANEL ─────────────────────────────── */
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.chat-msg {
+  max-width: 85%;
+  animation: msgIn 0.2s ease;
+}
+
+@keyframes msgIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.chat-msg.own { align-self: flex-end; }
+
+.chat-msg-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.chat-msg-name {
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+
+.chat-msg-time {
+  font-size: 10px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+}
+
+.chat-msg-bubble {
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.chat-msg:not(.own) .chat-msg-bubble {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 4px 12px 12px 12px;
+}
+
+.chat-msg.own .chat-msg-bubble {
+  background: rgba(0,255,136,0.15);
+  border: 1px solid rgba(0,255,136,0.3);
+  border-radius: 12px 4px 12px 12px;
+  color: var(--accent);
+}
+
+.chat-msg.system {
+  align-self: center;
+  text-align: center;
+}
+
+.chat-msg.system .chat-msg-bubble {
+  background: transparent;
+  border: none;
+  font-size: 11px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-style: italic;
+}
+
+.chat-input-area {
+  padding: 12px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+}
+
+.chat-input {
+  flex: 1;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  color: var(--text);
+  font-size: 13px;
+  font-family: var(--font-mono);
+  outline: none;
+  transition: all 0.2s;
+}
+
+.chat-input:focus { border-color: var(--accent); }
+.chat-input::placeholder { color: var(--muted); }
+
+.chat-send {
+  width: 36px;
+  height: 36px;
+  background: var(--accent);
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.chat-send:hover { background: #00e67a; transform: scale(1.05); }
+
+/* ─── STATUS BAR ─────────────────────────────── */
+.statusbar {
+  height: 24px;
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 16px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+.status-item { display: flex; align-items: center; gap: 4px; }
+.status-item.green { color: var(--accent); }
+.status-item.accent { color: var(--accent3); }
+
+.status-separator { width: 1px; height: 12px; background: var(--border); }
+
+.status-right { margin-left: auto; display: flex; align-items: center; gap: 16px; }
+
+/* ─── NOTIFICATIONS ──────────────────────────── */
+.notifications {
+  position: fixed;
+  bottom: 40px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.notif {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 10px 16px;
+  font-size: 13px;
+  font-family: var(--font-mono);
+  color: var(--text);
+  animation: notifIn 0.3s ease;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  max-width: 280px;
+}
+
+.notif.error { border-left-color: var(--danger); }
+.notif.info { border-left-color: var(--accent3); }
+
+@keyframes notifIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* ─── COPY TOOLTIP ───────────────────────────── */
+.copy-toast {
+  position: fixed;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent);
+  color: #0a0a0f;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.copy-toast.show { opacity: 1; }
+
+/* ─── SCROLLBARS ─────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg2); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+/* ─── RESPONSIVE ─────────────────────────────── */
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .logo-text { font-size: 32px; }
+  .session-box { padding: 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════
+     LANDING PAGE
+══════════════════════════════════════════════ -->
+<div id="landing">
+  <div class="landing-grid"></div>
+
+  <div class="landing-content">
+    <div class="logo-mark">
+      <div class="logo-icon">⚡</div>
+      <div class="logo-text">SYNCOUT</div>
+    </div>
+    <p class="landing-tagline">
+      Sync program with <span>anyone, anywhere</span> — in real-time
+    </p>
+
+    <div class="landing-cards">
+      <div class="landing-card">
+        <div class="landing-card-icon">⚡</div>
+        <div class="landing-card-label">Latency</div>
+        <div class="landing-card-value">&lt;50ms</div>
+      </div>
+      <div class="landing-card">
+        <div class="landing-card-icon">🔄</div>
+        <div class="landing-card-label">Algorithm</div>
+        <div class="landing-card-value">OT Sync</div>
+      </div>
+      <div class="landing-card">
+        <div class="landing-card-icon">🌐</div>
+        <div class="landing-card-label">Install</div>
+        <div class="landing-card-value">None</div>
+      </div>
+      <div class="landing-card">
+        <div class="landing-card-icon">🔒</div>
+        <div class="landing-card-label">Privacy</div>
+        <div class="landing-card-value">P2P</div>
+      </div>
+    </div>
+
+    <div class="session-box">
+      <div class="session-tabs">
+        <button class="session-tab active" onclick="switchTab('create')">Create Session</button>
+        <button class="session-tab" onclick="switchTab('join')">Join Session</button>
+      </div>
+
+      <!-- CREATE SESSION -->
+      <div class="tab-panel active" id="panel-create">
+        <div class="form-group">
+          <label class="form-label">Your Name</label>
+          <input type="text" class="form-input" id="create-name"
+                 placeholder="e.g. Bannusha" maxlength="20">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Language</label>
+          <select class="form-input" id="create-lang" style="cursor:pointer">
+            <option value="python">🐍 Python</option>
+            <option value="javascript">📜 JavaScript</option>
+            <option value="typescript">🔷 TypeScript</option>
+            <option value="java">☕ Java</option>
+            <option value="cpp">⚙️ C++</option>
+            <option value="rust">🦀 Rust</option>
+            <option value="go">🐹 Go</option>
+            <option value="sql">🗄️ SQL</option>
+          </select>
+        </div>
+        <button class="btn-primary" onclick="createSession()">
+          ⚡ Create Session
+        </button>
+      </div>
+
+      <!-- JOIN SESSION -->
+      <div class="tab-panel" id="panel-join">
+        <div class="form-group">
+          <label class="form-label">Your Name</label>
+          <input type="text" class="form-input" id="join-name"
+                 placeholder="e.g. Bannusha" maxlength="20">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Session Code</label>
+          <input type="text" class="form-input" id="join-code"
+                 placeholder="e.g. A1B2C3D4" maxlength="8"
+                 style="text-transform:uppercase;letter-spacing:4px">
+        </div>
+        <button class="btn-primary" onclick="joinSession()">
+          🚀 Join Session
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     MAIN APP
+══════════════════════════════════════════════ -->
+<div id="app">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-logo">SYNCOUT</div>
+
+    <div class="session-badge" onclick="copySessionCode()" title="Click to copy session code">
+      📋 <span id="session-code-display">........</span>
+    </div>
+
+    <div class="divider"></div>
+
+    <select class="lang-select" id="lang-selector" onchange="changeLanguage(this.value)">
+      <option value="python">🐍 Python</option>
+      <option value="javascript">📜 JavaScript</option>
+      <option value="typescript">🔷 TypeScript</option>
+      <option value="java">☕ Java</option>
+      <option value="cpp">⚙️ C++</option>
+      <option value="rust">🦀 Rust</option>
+      <option value="go">🐹 Go</option>
+      <option value="sql">🗄️ SQL</option>
+    </select>
+
+    <div class="divider"></div>
+
+    <button class="topbar-btn" onclick="copyCode()">📋 Copy Code</button>
+    <button class="topbar-btn" onclick="clearCode()">🗑️ Clear</button>
+    <button class="topbar-btn" onclick="leaveSession()">🚪 Leave</button>
+
+    <div class="users-strip" id="users-avatars"></div>
+    <div class="connection-dot" id="connection-dot" title="Connected"></div>
+  </div>
+
+  <!-- MAIN AREA -->
+  <div class="main-area">
+
+    <!-- CODE EDITOR -->
+    <div class="editor-area">
+      <div class="editor-header">
+        <div class="file-tab">
+          <div class="file-dot"></div>
+          <span id="file-name">main.py</span>
+        </div>
+      </div>
+      <div class="editor-wrapper">
+        <div class="line-numbers" id="line-numbers">1</div>
+        <textarea
+          id="code-editor"
+          spellcheck="false"
+          autocorrect="off"
+          autocapitalize="off"
+          autocomplete="off"
+          placeholder="// Start coding together..."
+        ></textarea>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sidebar-tabs">
+        <button class="sidebar-tab active" onclick="switchSidebarTab('users')">👥 Users</button>
+        <button class="sidebar-tab" onclick="switchSidebarTab('chat')">💬 Chat</button>
+      </div>
+
+      <!-- USERS PANEL -->
+      <div class="sidebar-panel active" id="sidebar-users">
+        <div class="users-panel">
+          <div class="users-section-title">Active Users</div>
+          <div id="users-list">
+            <!-- Populated dynamically -->
+          </div>
+
+          <div class="users-section-title" style="margin-top:20px">Session Info</div>
+          <div style="font-family:var(--font-mono);font-size:12px;color:var(--muted);line-height:2">
+            <div>Code: <span style="color:var(--accent)" id="info-code">—</span></div>
+            <div>Language: <span style="color:var(--accent3)" id="info-lang">—</span></div>
+            <div>Revision: <span style="color:var(--text)" id="info-revision">0</span></div>
+            <div>Users: <span style="color:var(--text)" id="info-users">0</span></div>
+          </div>
+
+          <div class="users-section-title" style="margin-top:20px">Share Session</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:8px">
+            Share this code with your Sync partner:
+          </div>
+          <div class="session-badge" onclick="copySessionCode()"
+               style="justify-content:center;padding:10px;font-size:16px;letter-spacing:4px">
+            <span id="share-code">........</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CHAT PANEL -->
+      <div class="sidebar-panel" id="sidebar-chat">
+        <div class="chat-messages" id="chat-messages">
+          <div class="chat-msg system">
+            <div class="chat-msg-bubble">Chat with your coding partner 💬</div>
+          </div>
+        </div>
+        <div class="chat-input-area">
+          <input type="text" class="chat-input" id="chat-input"
+                 placeholder="Type a message..."
+                 onkeydown="handleChatKey(event)">
+          <button class="chat-send" onclick="sendChat()">➤</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end main-area -->
+
+  <!-- STATUS BAR -->
+  <div class="statusbar">
+    <div class="status-item green">
+      <span>●</span>
+      <span id="status-connection">Connected</span>
+    </div>
+    <div class="status-separator"></div>
+    <div class="status-item">Ln <span id="status-line">1</span></div>
+    <div class="status-item">Col <span id="status-col">1</span></div>
+    <div class="status-separator"></div>
+    <div class="status-item">
+      <span id="status-chars">0</span> chars
+    </div>
+    <div class="status-right">
+      <div class="status-item accent">OT Algorithm</div>
+      <div class="status-separator"></div>
+      <div class="status-item">SYNCOUT v1.0</div>
+    </div>
+  </div>
+
+</div><!-- end #app -->
+
+<!-- Notifications container -->
+<div class="notifications" id="notifications"></div>
+
+<!-- Copy toast -->
+<div class="copy-toast" id="copy-toast">✓ Copied to clipboard!</div>
+
+<script>
+// ══════════════════════════════════════════════════
+// SYNCOUT - Client Application
+// ══════════════════════════════════════════════════
+
+let ws = null;
+let myUserId = null;
+let myUserName = null;
+let myUserColor = null;
+let sessionId = null;
+let currentRevision = 0;
+let isApplyingRemote = false;
+let reconnectTimer = null;
+let pingInterval = null;
+
+const BACKEND_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'ws://localhost:8001'
+  : `wss://${window.location.hostname}`;
+
+const LANG_EXTENSIONS = {
+  python: 'main.py', javascript: 'main.js', typescript: 'main.ts',
+  java: 'Main.java', cpp: 'main.cpp', rust: 'main.rs',
+  go: 'main.go', sql: 'query.sql'
+};
+
+const LANG_STARTERS = {
+  python: '# Welcome to SYNCOUT!\n# Start coding together...\n\nprint("Hello, World!")\n',
+  javascript: '// Welcome to SYNCOUT!\n// Start coding together...\n\nconsole.log("Hello, World!");\n',
+  typescript: '// Welcome to SYNCOUT!\n// Start coding together...\n\nconst greeting: string = "Hello, World!";\nconsole.log(greeting);\n',
+  java: '// Welcome to SYNCOUT!\npublic class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}\n',
+  cpp: '// Welcome to SYNCOUT!\n#include <iostream>\n\nint main() {\n    std::cout << "Hello, World!" << std::endl;\n    return 0;\n}\n',
+  rust: '// Welcome to SYNCOUT!\nfn main() {\n    println!("Hello, World!");\n}\n',
+  go: '// Welcome to SYNCOUT!\npackage main\n\nimport "fmt"\n\nfunc main() {\n    fmt.Println("Hello, World!")\n}\n',
+  sql: '-- Welcome to SYNCOUT!\n-- Start coding together...\n\nSELECT \'Hello, World!\' AS greeting;\n'
+};
+
+// ─── LANDING LOGIC ──────────────────────────────
+
+function switchTab(tab) {
+  document.querySelectorAll('.session-tab').forEach((t, i) => {
+    t.classList.toggle('active', (i === 0 && tab === 'create') || (i === 1 && tab === 'join'));
+  });
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(`panel-${tab}`).classList.add('active');
+}
+
+async function createSession() {
+  const name = document.getElementById('create-name').value.trim() || 'Anonymous';
+  const lang = document.getElementById('create-lang').value;
+
+  const sessionCode = Math.random().toString(36).substring(2, 10).toUpperCase();
+  connectToSession(sessionCode, name, lang);
+}
+
+function joinSession() {
+  const name = document.getElementById('join-name').value.trim() || 'Anonymous';
+  const code = document.getElementById('join-code').value.trim().toUpperCase();
+
+  if (!code || code.length < 4) {
+    showNotif('Enter a valid session code', 'error');
+    return;
+  }
+  connectToSession(code, name);
+}
+
+// Check URL for session code on load
+window.addEventListener('load', () => {
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get('session');
+  if (code) {
+    document.getElementById('join-code').value = code;
+    switchTab('join');
+  }
+
+  // Handle Tab key in editor
+  document.getElementById('code-editor').addEventListener('keydown', handleEditorKeydown);
+  document.getElementById('code-editor').addEventListener('input', handleEditorInput);
+  document.getElementById('code-editor').addEventListener('keyup', updateCursorInfo);
+  document.getElementById('code-editor').addEventListener('click', updateCursorInfo);
+});
+
+// ─── WEBSOCKET ──────────────────────────────────
+
+function connectToSession(code, name, lang = null) {
+  sessionId = code;
+  myUserName = name;
+
+  const wsUrl = `${BACKEND_URL}/ws/${code}`;
+
+  try {
+    ws = new WebSocket(wsUrl);
+
+    ws.onopen = () => {
+      // Send user identity
+      ws.send(JSON.stringify({ name: name }));
+
+      // Update UI
+      setConnectionStatus(true);
+      showApp();
+
+      // Update session displays
+      document.getElementById('session-code-display').textContent = code;
+      document.getElementById('share-code').textContent = code;
+      document.getElementById('info-code').textContent = code;
+
+      // Set language if creating
+      if (lang) {
+        document.getElementById('lang-selector').value = lang;
+        updateFileTab(lang);
+      }
+
+      // Start ping
+      pingInterval = setInterval(() => {
+        if (ws && ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({ type: 'ping' }));
+        }
+      }, 30000);
+
+      showNotif(`Connected to session ${code}`, 'success');
+    };
+
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      handleMessage(data);
+    };
+
+    ws.onclose = () => {
+      setConnectionStatus(false);
+      clearInterval(pingInterval);
+      showNotif('Connection lost. Reconnecting...', 'error');
+
+      reconnectTimer = setTimeout(() => {
+        connectToSession(code, name, lang);
+      }, 3000);
+    };
+
+    ws.onerror = (err) => {
+      console.error('WebSocket error:', err);
+      showNotif('Connection error', 'error');
+    };
+
+  } catch (e) {
+    showNotif('Failed to connect: ' + e.message, 'error');
+  }
+}
+
+// ─── MESSAGE HANDLER ────────────────────────────
+
+function handleMessage(data) {
+  switch (data.type) {
+
+    case 'init':
+      myUserId = data.user_id;
+      myUserName = data.user_name;
+      myUserColor = data.user_color;
+      currentRevision = data.revision;
+
+      // Set code
+      isApplyingRemote = true;
+      document.getElementById('code-editor').value = data.code;
+      isApplyingRemote = false;
+
+      // Set language
+      if (data.language) {
+        document.getElementById('lang-selector').value = data.language;
+        updateFileTab(data.language);
+      }
+
+      updateLineNumbers();
+      updateUsers(data.users);
+      updateStatusChars();
+      break;
+
+    case 'operation':
+      if (data.user_id !== myUserId) {
+        isApplyingRemote = true;
+        document.getElementById('code-editor').value = data.code;
+        currentRevision = data.revision;
+        isApplyingRemote = false;
+        updateLineNumbers();
+        updateStatusChars();
+        updateSessionInfo();
+      }
+      break;
+
+    case 'cursor':
+      if (data.user_id !== myUserId) {
+        updateRemoteCursor(data);
+      }
+      break;
+
+    case 'user_joined':
+      updateUsers(data.users);
+      addSystemChat(`${data.user.name} joined the session`);
+      showNotif(`${data.user.name} joined! 👋`, 'info');
+      break;
+
+    case 'user_left':
+      updateUsers(data.users);
+      addSystemChat(`${data.user_name} left the session`);
+      break;
+
+    case 'language':
+      document.getElementById('lang-selector').value = data.language;
+      updateFileTab(data.language);
+      addSystemChat(`${data.user_name} changed language to ${data.language}`);
+      break;
+
+    case 'chat':
+      addChatMessage(data);
+      break;
+
+    case 'pong':
+      // Heartbeat received
+      break;
+  }
+}
+
+// ─── EDITOR LOGIC ───────────────────────────────
+
+function handleEditorKeydown(e) {
+  // Tab key → insert spaces
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    const editor = document.getElementById('code-editor');
+    const start = editor.selectionStart;
+    const end = editor.selectionEnd;
+    const spaces = '    ';
+    editor.value = editor.value.substring(0, start) + spaces + editor.value.substring(end);
+    editor.selectionStart = editor.selectionEnd = start + spaces.length;
+    handleEditorInput();
+  }
+
+  // Enter key → auto-indent
+  if (e.key === 'Enter') {
+    const editor = document.getElementById('code-editor');
+    const start = editor.selectionStart;
+    const line = editor.value.substring(0, start).split('\n').pop();
+    const indent = line.match(/^(\s*)/)[1];
+    const extraIndent = line.trimEnd().endsWith(':') ? '    ' : '';
+
+    setTimeout(() => {
+      const pos = editor.selectionStart;
+      editor.value = editor.value.substring(0, pos) + indent + extraIndent + editor.value.substring(pos);
+      editor.selectionStart = editor.selectionEnd = pos + indent.length + extraIndent.length;
+      handleEditorInput();
+    }, 0);
+  }
+}
+
+let inputTimeout = null;
+
+function handleEditorInput() {
+  if (isApplyingRemote) return;
+
+  updateLineNumbers();
+  updateStatusChars();
+  updateCursorInfo();
+
+  // Debounce sending operations
+  clearTimeout(inputTimeout);
+  inputTimeout = setTimeout(() => {
+    sendOperation();
+  }, 50);
+}
+
+function sendOperation() {
+  if (!ws || ws.readyState !== WebSocket.OPEN) return;
+
+  const code = document.getElementById('code-editor').value;
+
+  ws.send(JSON.stringify({
+    type: 'operation',
+    op_type: 'full_update',
+    content: code,
+    revision: currentRevision
+  }));
+}
+
+// ─── CURSOR TRACKING ────────────────────────────
+
+function updateCursorInfo() {
+  const editor = document.getElementById('code-editor');
+  const text = editor.value.substring(0, editor.selectionStart);
+  const lines = text.split('\n');
+  const line = lines.length;
+  const col = lines[lines.length - 1].length + 1;
+
+  document.getElementById('status-line').textContent = line;
+  document.getElementById('status-col').textContent = col;
+
+  // Send cursor position to others
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({
+      type: 'cursor',
+      position: editor.selectionStart,
+      line: line,
+      column: col
+    }));
+  }
+}
+
+function updateRemoteCursor(data) {
+  // Simple cursor indicator in users list
+  const userItems = document.querySelectorAll('.user-item');
+  userItems.forEach(item => {
+    if (item.dataset.userId === data.user_id) {
+      const status = item.querySelector('.user-item-status');
+      if (status) {
+        status.textContent = `Ln ${data.line}, Col ${data.column}`;
+      }
+    }
+  });
+}
+
+// ─── LINE NUMBERS ───────────────────────────────
+
+function updateLineNumbers() {
+  const editor = document.getElementById('code-editor');
+  const lines = editor.value.split('\n').length;
+  const lineNumbersEl = document.getElementById('line-numbers');
+
+  let html = '';
+  for (let i = 1; i <= lines; i++) {
+    html += i + '\n';
+  }
+  lineNumbersEl.textContent = html;
+
+  // Sync scroll
+  lineNumbersEl.scrollTop = editor.scrollTop;
+}
+
+// Sync line numbers scroll with editor
+document.addEventListener('DOMContentLoaded', () => {
+  const editor = document.getElementById('code-editor');
+  if (editor) {
+    editor.addEventListener('scroll', () => {
+      const lineNums = document.getElementById('line-numbers');
+      if (lineNums) lineNums.scrollTop = editor.scrollTop;
+    });
+  }
+});
+
+// ─── USERS UI ───────────────────────────────────
+
+function updateUsers(users) {
+  // Update avatars in topbar
+  const avatarsEl = document.getElementById('users-avatars');
+  avatarsEl.innerHTML = users.map(u => `
+    <div class="user-avatar" title="${u.name}"
+         style="background:${u.color};color:#000">
+      ${u.name.charAt(0).toUpperCase()}
+    </div>
+  `).join('');
+
+  // Update users list in sidebar
+  const listEl = document.getElementById('users-list');
+  listEl.innerHTML = users.map(u => `
+    <div class="user-item" data-user-id="${u.id}">
+      <div class="user-item-avatar" style="background:${u.color};color:#000">
+        ${u.name.charAt(0).toUpperCase()}
+      </div>
+      <div class="user-item-info">
+        <div class="user-item-name">${u.name}</div>
+        <div class="user-item-status">Active</div>
+      </div>
+      ${u.id === myUserId ? '<span class="user-you-badge">You</span>' : ''}
+    </div>
+  `).join('');
+
+  // Update session info
+  document.getElementById('info-users').textContent = users.length;
+  updateSessionInfo();
+}
+
+function updateSessionInfo() {
+  document.getElementById('info-revision').textContent = currentRevision;
+  const lang = document.getElementById('lang-selector').value;
+  document.getElementById('info-lang').textContent = lang;
+}
+
+// ─── CHAT ───────────────────────────────────────
+
+function addChatMessage(data) {
+  const messagesEl = document.getElementById('chat-messages');
+  const isOwn = data.user_id === myUserId;
+  const time = new Date(data.timestamp * 1000).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+
+  const msgEl = document.createElement('div');
+  msgEl.className = `chat-msg ${isOwn ? 'own' : ''}`;
+  msgEl.innerHTML = `
+    ${!isOwn ? `<div class="chat-msg-header">
+      <span class="chat-msg-name" style="color:${data.user_color}">${data.user_name}</span>
+      <span class="chat-msg-time">${time}</span>
+    </div>` : ''}
+    <div class="chat-msg-bubble">${escapeHtml(data.message)}</div>
+  `;
+
+  messagesEl.appendChild(msgEl);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+
+  // Switch to chat tab if message from someone else
+  if (!isOwn) {
+    const chatTab = document.querySelector('.sidebar-tab:nth-child(2)');
+    if (!chatTab.classList.contains('active')) {
+      chatTab.style.animation = 'pulse 0.5s 3';
+      showNotif(`${data.user_name}: ${data.message.substring(0, 30)}...`, 'info');
+    }
+  }
+}
+
+function addSystemChat(message) {
+  const messagesEl = document.getElementById('chat-messages');
+  const msgEl = document.createElement('div');
+  msgEl.className = 'chat-msg system';
+  msgEl.innerHTML = `<div class="chat-msg-bubble">• ${escapeHtml(message)}</div>`;
+  messagesEl.appendChild(msgEl);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
+function sendChat() {
+  const input = document.getElementById('chat-input');
+  const message = input.value.trim();
+  if (!message || !ws || ws.readyState !== WebSocket.OPEN) return;
+
+  ws.send(JSON.stringify({ type: 'chat', message }));
+  input.value = '';
+}
+
+function handleChatKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendChat();
+  }
+}
+
+// ─── UI HELPERS ─────────────────────────────────
+
+function showApp() {
+  document.getElementById('landing').style.display = 'none';
+  document.getElementById('app').classList.add('visible');
+}
+
+function leaveSession() {
+  if (ws) { ws.close(); ws = null; }
+  clearInterval(pingInterval);
+  clearTimeout(reconnectTimer);
+  document.getElementById('landing').style.display = 'flex';
+  document.getElementById('app').classList.remove('visible');
+  document.getElementById('chat-messages').innerHTML =
+    '<div class="chat-msg system"><div class="chat-msg-bubble">Chat with your coding partner 💬</div></div>';
+  document.getElementById('code-editor').value = '';
+}
+
+function copySessionCode() {
+  navigator.clipboard.writeText(sessionId).then(() => {
+    showCopyToast('✓ Session code copied!');
+  });
+}
+
+function copyCode() {
+  const code = document.getElementById('code-editor').value;
+  navigator.clipboard.writeText(code).then(() => {
+    showCopyToast('✓ Code copied!');
+  });
+}
+
+function clearCode() {
+  if (confirm('Clear all code? This will clear for everyone.')) {
+    document.getElementById('code-editor').value = '';
+    handleEditorInput();
+  }
+}
+
+function changeLanguage(lang) {
+  updateFileTab(lang);
+  updateSessionInfo();
+
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({ type: 'language', language: lang }));
+  }
+}
+
+function updateFileTab(lang) {
+  const filename = LANG_EXTENSIONS[lang] || 'main.txt';
+  document.getElementById('file-name').textContent = filename;
+}
+
+function setConnectionStatus(connected) {
+  const dot = document.getElementById('connection-dot');
+  const status = document.getElementById('status-connection');
+
+  if (connected) {
+    dot.style.background = 'var(--accent)';
+    dot.style.boxShadow = '0 0 6px rgba(0,255,136,0.5)';
+    status.textContent = 'Connected';
+  } else {
+    dot.style.background = 'var(--danger)';
+    dot.style.boxShadow = '0 0 6px rgba(255,71,87,0.5)';
+    status.textContent = 'Reconnecting...';
+  }
+}
+
+function updateStatusChars() {
+  const code = document.getElementById('code-editor').value;
+  document.getElementById('status-chars').textContent = code.length.toLocaleString();
+}
+
+function switchSidebarTab(tab) {
+  document.querySelectorAll('.sidebar-tab').forEach((t, i) => {
+    t.classList.toggle('active', (i === 0 && tab === 'users') || (i === 1 && tab === 'chat'));
+  });
+  document.querySelectorAll('.sidebar-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(`sidebar-${tab}`).classList.add('active');
+}
+
+function showNotif(message, type = 'success') {
+  const container = document.getElementById('notifications');
+  const notif = document.createElement('div');
+  notif.className = `notif ${type === 'error' ? 'error' : type === 'info' ? 'info' : ''}`;
+  notif.textContent = message;
+  container.appendChild(notif);
+  setTimeout(() => notif.remove(), 3500);
+}
+
+function showCopyToast(msg) {
+  const toast = document.getElementById('copy-toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2000);
+}
+
+function escapeHtml(text) {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+</script>
+</body>
+</html>
