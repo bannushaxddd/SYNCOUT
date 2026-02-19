@@ -1282,10 +1282,11 @@ function connectToSession(code, name, lang = null) {
   sessionId = code;
   myUserName = name;
 
-  const wsUrl = `${BACKEND_URL}/ws/${code}`;
 
   try {
-    ws = new WebSocket(wsUrl);
+    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+    ws = new WebSocket(`${protocol}//${window.location.host}/ws/${sessionId}`);
+
 
     ws.onopen = () => {
       ws.send(JSON.stringify({ name: name }));
