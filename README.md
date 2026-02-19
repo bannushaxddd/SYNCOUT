@@ -12,7 +12,7 @@
 
 ## 🚀 Live Demo
 
-**Try it:** [SYNCOUT.onrender.com](https://SYNCOUT.onrender.com) *(coming soon)*
+**Try it:** [https://syncout-x.onrender.com](https://syncout-x.onrender.com) 
 
 ---
 
