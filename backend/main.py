@@ -19,7 +19,6 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = FastAPI(title="SYNCOUT", description="Real-time Collaborative Code Editor")
-app.mount("/static", StaticFiles(directory="frontend"), name="static")
 @app.get("/health")
 async def health():
     return {"status": "ok"}
@@ -340,3 +339,8 @@ async def websocket_endpoint(websocket: WebSocket, session_id: str):
                 "users": manager.get_users_info(session)
             })
             logger.info(f"User {user.name} left session {session_id}")
+app.mount(
+    "/",
+    StaticFiles(directory=os.path.join(BASE_DIR, "frontend"), html=True),
+    name="frontend",
+)
