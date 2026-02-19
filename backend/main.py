@@ -175,11 +175,6 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-app.mount(
-    "/",
-    StaticFiles(directory=os.path.join(BASE_DIR, "frontend"), html=True),
-    name="frontend",
-)
 
 @app.post("/api/sessions")
 async def create_session():
@@ -256,7 +251,11 @@ async def websocket_endpoint(websocket: WebSocket, session_id: str):
 
         # Main message loop
         while True:
-            data = await websocket.receive_json()
+            try:
+                data = await websocket.receive_json()
+        except Exception:
+            break
+
             msg_type = data.get("type")
 
             # ── Code Operation ──────────────────
