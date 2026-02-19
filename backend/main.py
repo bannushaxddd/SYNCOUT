@@ -340,8 +340,3 @@ async def websocket_endpoint(websocket: WebSocket, session_id: str):
                 "users": manager.get_users_info(session)
             })
             logger.info(f"User {user.name} left session {session_id}")
-
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=8001, reload=True)
