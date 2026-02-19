@@ -188,6 +188,10 @@ async def create_session():
         "join_url": f"/session/{session.id}"
     }
 
+@app.get("/health")
+async def health_check():
+    return {"status": "ok"}
+
 @app.get("/api/sessions/{session_id}")
 async def get_session(session_id: str):
     session = manager.get_session(session_id)
