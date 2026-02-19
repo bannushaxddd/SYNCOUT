@@ -20,6 +20,9 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(title="SYNCOUT", description="Real-time Collaborative Code Editor")
 app.mount("/static", StaticFiles(directory="frontend"), name="static")
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
 
 app.add_middleware(
     CORSMiddleware,
@@ -187,10 +190,6 @@ async def create_session():
         "created_at": session.created_at,
         "join_url": f"/session/{session.id}"
     }
-
-@app.get("/health")
-async def health():
-    return {"status": "ok"}
 
 @app.get("/api/sessions/{session_id}")
 async def get_session(session_id: str):
