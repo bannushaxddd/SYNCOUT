@@ -189,7 +189,7 @@ async def create_session():
     }
 
 @app.get("/health")
-async def health_check():
+async def health():
     return {"status": "ok"}
 
 @app.get("/api/sessions/{session_id}")
