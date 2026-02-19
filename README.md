@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # ⚡ SYNCOUT — Pair Program with Anyone
 
 [![Python](https://img.shields.io/badge/Python-3.11-blue.svg)](https://www.python.org/)
@@ -295,3 +296,7 @@ MIT License — see [LICENSE](LICENSE) file
 ---
 
 *Built with ❤️ by Bannusha Shaik | Real-time collaboration powered by Operational Transform*
+=======
+# SYNCOUT
+SYNCOUT is a low latency real time collaborative code editor built with FastAPI and WebSockets, implementing conflict free concurrent editing using Operational Transform. Designed to simulate production-grade multi-user systems with session isolation, live cursor tracking, and scalable event broadcasting.
+>>>>>>> 72273cb2091d84ed954bfd8bd7f081fb651d51a1

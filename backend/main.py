@@ -19,6 +19,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = FastAPI(title="SYNCOUT", description="Real-time Collaborative Code Editor")
+app.mount("/static", StaticFiles(directory="frontend"), name="static")
 
 app.add_middleware(
     CORSMiddleware,
@@ -167,9 +168,16 @@ manager = SessionManager()
 # REST ENDPOINTS
 # ─────────────────────────────────────────────
 
-@app.get("/")
-async def root():
-    return {"name": "SYNCOUT", "status": "running", "version": "1.0.0"}
+from fastapi.responses import FileResponse
+import os
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+app.mount(
+    "/",
+    StaticFiles(directory=os.path.join(BASE_DIR, "frontend"), html=True),
+    name="frontend",
+)
 
 @app.post("/api/sessions")
 async def create_session():
