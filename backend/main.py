@@ -6,12 +6,14 @@ Backend: FastAPI + WebSockets + Operational Transform
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
 import uuid
 import time
 from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 import logging
 import os
+from .executor import executor
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -183,6 +185,16 @@ async def get_session(session_id: str):
         "exists": True
     }
 
+class ExecuteRequest(BaseModel):
+    code: str
+    language: str
+    stdin: str = ""
+
+@app.post("/api/execute")
+async def execute_code(req: ExecuteRequest):
+    result = executor.execute(req.code, req.language, req.stdin)
+    return result
+
 @app.get("/api/stats")
 async def get_stats():
     total_users = sum(len(s.users) for s in manager.sessions.values())
@@ -293,6 +305,23 @@ async def websocket_endpoint(websocket: WebSocket, session_id: str):
                     "message": data.get("message", ""),
                     "timestamp": time.time()
                 })
+
+            elif msg_type == "execute":
+                exec_code = data.get("code", "")
+                exec_lang = data.get("language", "python")
+                exec_stdin = data.get("stdin", "")
+                result = executor.execute(exec_code, exec_lang, exec_stdin)
+                exec_result = {
+                    "type": "execution_result",
+                    "user_id": user.id,
+                    "user_name": user.name,
+                    "user_color": user.color,
+                    **result
+                }
+                # Send to executor
+                await websocket.send_json(exec_result)
+                # Broadcast to other collaborators
+                await manager.broadcast(session, exec_result, exclude_user=user.id)
 
             elif msg_type == "ping":
                 await websocket.send_json({"type": "pong"})
