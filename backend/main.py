@@ -6,19 +6,18 @@ Backend: FastAPI + WebSockets + Operational Transform
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse
-import json
 import uuid
 import time
 from typing import Dict, List, Optional
-from dataclasses import dataclass, field, asdict
-import asyncio
+from dataclasses import dataclass, field
 import logging
+import os
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = FastAPI(title="SYNCOUT", description="Real-time Collaborative Code Editor")
+
 @app.get("/health")
 async def health():
     return {"status": "ok"}
@@ -37,18 +36,16 @@ app.add_middleware(
 
 @dataclass
 class Operation:
-    """Operational Transform operation"""
-    type: str          # 'insert' | 'delete' | 'retain'
-    position: int      # Character position
-    content: str = ""  # For insert operations
-    length: int = 0    # For delete/retain operations
+    type: str
+    position: int
+    content: str = ""
+    length: int = 0
     user_id: str = ""
     revision: int = 0
     timestamp: float = field(default_factory=time.time)
 
 @dataclass
 class User:
-    """Connected user"""
     id: str
     name: str
     color: str
@@ -57,7 +54,6 @@ class User:
 
 @dataclass
 class Session:
-    """Collaborative editing session"""
     id: str
     code: str = "# Welcome to SYNCOUT!\n# Start typing to collaborate...\n\nprint('Hello, World!')\n"
     language: str = "python"
@@ -108,7 +104,6 @@ class SessionManager:
             del session.users[user_id]
 
     def apply_operation(self, session: Session, op: Operation) -> bool:
-        """Apply an Operational Transform operation"""
         try:
             code = session.code
 
@@ -127,7 +122,6 @@ class SessionManager:
             session.revision += 1
             session.history.append(op)
 
-            # Keep only last 100 operations
             if len(session.history) > 100:
                 session.history = session.history[-100:]
 
@@ -137,7 +131,6 @@ class SessionManager:
             return False
 
     async def broadcast(self, session: Session, message: dict, exclude_user: str = None):
-        """Broadcast message to all users in session"""
         disconnected = []
         for user_id, user in session.users.items():
             if user_id == exclude_user:
@@ -148,7 +141,6 @@ class SessionManager:
                 except Exception:
                     disconnected.append(user_id)
 
-        # Clean up disconnected users
         for user_id in disconnected:
             self.remove_user(session, user_id)
 
@@ -163,18 +155,11 @@ class SessionManager:
             for u in session.users.values()
         ]
 
-
 manager = SessionManager()
 
 # ─────────────────────────────────────────────
 # REST ENDPOINTS
 # ─────────────────────────────────────────────
-
-from fastapi.responses import FileResponse
-import os
-
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 
 @app.post("/api/sessions")
 async def create_session():
@@ -218,14 +203,10 @@ async def websocket_endpoint(websocket: WebSocket, session_id: str):
     user = None
 
     try:
-        # Wait for user to identify themselves
         init_data = await websocket.receive_json()
         user_name = init_data.get("name", f"User{len(session.users) + 1}")
         user = manager.add_user(session, user_name, websocket)
 
-        logger.info(f"User {user.name} ({user.id}) joined session {session_id}")
-
-        # Send initial state to new user
         await websocket.send_json({
             "type": "init",
             "user_id": user.id,
@@ -237,7 +218,6 @@ async def websocket_endpoint(websocket: WebSocket, session_id: str):
             "users": manager.get_users_info(session)
         })
 
-        # Notify others about new user
         await manager.broadcast(session, {
             "type": "user_joined",
             "user": {
@@ -249,76 +229,73 @@ async def websocket_endpoint(websocket: WebSocket, session_id: str):
             "users": manager.get_users_info(session)
         }, exclude_user=user.id)
 
-        # Main message loop
-while True:
-    try:
-        data = await websocket.receive_json()
-    except Exception:
-        break
+        while True:
+            try:
+                data = await websocket.receive_json()
+            except Exception:
+                break
 
-    msg_type = data.get("type")
+            msg_type = data.get("type")
 
-    # ── Code Operation ──────────────────
-    if msg_type == "operation":
-        op = Operation(
-            type=data.get("op_type", "full_update"),
-            position=data.get("position", 0),
-            content=data.get("content", ""),
-            length=data.get("length", 0),
-            user_id=user.id,
-            revision=data.get("revision", session.revision)
-        )
+            if msg_type == "operation":
+                op = Operation(
+                    type=data.get("op_type", "full_update"),
+                    position=data.get("position", 0),
+                    content=data.get("content", ""),
+                    length=data.get("length", 0),
+                    user_id=user.id,
+                    revision=data.get("revision", session.revision)
+                )
 
-        success = manager.apply_operation(session, op)
+                success = manager.apply_operation(session, op)
 
-        if success:
-            await manager.broadcast(session, {
-                "type": "operation",
-                "op_type": op.type,
-                "position": op.position,
-                "content": op.content,
-                "length": op.length,
-                "user_id": user.id,
-                "user_name": user.name,
-                "user_color": user.color,
-                "revision": session.revision,
-                "code": session.code
-            }, exclude_user=user.id)
+                if success:
+                    await manager.broadcast(session, {
+                        "type": "operation",
+                        "op_type": op.type,
+                        "position": op.position,
+                        "content": op.content,
+                        "length": op.length,
+                        "user_id": user.id,
+                        "user_name": user.name,
+                        "user_color": user.color,
+                        "revision": session.revision,
+                        "code": session.code
+                    }, exclude_user=user.id)
 
-    elif msg_type == "cursor":
-        user.cursor_position = data.get("position", 0)
-        await manager.broadcast(session, {
-            "type": "cursor",
-            "user_id": user.id,
-            "user_name": user.name,
-            "user_color": user.color,
-            "position": user.cursor_position,
-            "line": data.get("line", 0),
-            "column": data.get("column", 0)
-        }, exclude_user=user.id)
+            elif msg_type == "cursor":
+                user.cursor_position = data.get("position", 0)
+                await manager.broadcast(session, {
+                    "type": "cursor",
+                    "user_id": user.id,
+                    "user_name": user.name,
+                    "user_color": user.color,
+                    "position": user.cursor_position,
+                    "line": data.get("line", 0),
+                    "column": data.get("column", 0)
+                }, exclude_user=user.id)
 
-    elif msg_type == "language":
-        session.language = data.get("language", "python")
-        await manager.broadcast(session, {
-            "type": "language",
-            "language": session.language,
-            "user_id": user.id,
-            "user_name": user.name
-        }, exclude_user=user.id)
+            elif msg_type == "language":
+                session.language = data.get("language", "python")
+                await manager.broadcast(session, {
+                    "type": "language",
+                    "language": session.language,
+                    "user_id": user.id,
+                    "user_name": user.name
+                }, exclude_user=user.id)
 
-    elif msg_type == "chat":
-        await manager.broadcast(session, {
-            "type": "chat",
-            "user_id": user.id,
-            "user_name": user.name,
-            "user_color": user.color,
-            "message": data.get("message", ""),
-            "timestamp": time.time()
-        })
+            elif msg_type == "chat":
+                await manager.broadcast(session, {
+                    "type": "chat",
+                    "user_id": user.id,
+                    "user_name": user.name,
+                    "user_color": user.color,
+                    "message": data.get("message", ""),
+                    "timestamp": time.time()
+                })
 
-    elif msg_type == "ping":
-        await websocket.send_json({"type": "pong"})
-
+            elif msg_type == "ping":
+                await websocket.send_json({"type": "pong"})
 
     except WebSocketDisconnect:
         logger.info(f"User {user.name if user else 'Unknown'} disconnected")
@@ -333,7 +310,13 @@ while True:
                 "user_name": user.name,
                 "users": manager.get_users_info(session)
             })
-            logger.info(f"User {user.name} left session {session_id}")
+
+# ─────────────────────────────────────────────
+# FRONTEND STATIC
+# ─────────────────────────────────────────────
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 app.mount(
     "/",
     StaticFiles(directory=os.path.join(BASE_DIR, "frontend"), html=True),
