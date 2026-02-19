@@ -88,6 +88,8 @@ class CodeExecutor:
         
         lang_config = self.LANGUAGES[language]
         
+        source_file = None
+        output_file = None
         try:
             # Create temporary file
             with tempfile.NamedTemporaryFile(
@@ -110,8 +112,6 @@ class CodeExecutor:
                 
                 if not compile_result['success']:
                     return compile_result
-            else:
-                output_file = None
             
             # Execute
             command = [
@@ -171,7 +171,7 @@ class CodeExecutor:
         finally:
             # Cleanup
             try:
-                if 'source_file' in locals():
+                if source_file and os.path.exists(source_file):
                     os.unlink(source_file)
                 if output_file and os.path.exists(output_file):
                     os.unlink(output_file)
