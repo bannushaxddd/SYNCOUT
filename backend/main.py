@@ -7,6 +7,7 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
+import asyncio
 import uuid
 import time
 from typing import Dict, List, Optional
@@ -192,7 +193,7 @@ class ExecuteRequest(BaseModel):
 
 @app.post("/api/execute")
 async def execute_code(req: ExecuteRequest):
-    result = executor.execute(req.code, req.language, req.stdin)
+    result = await asyncio.to_thread(executor.execute, req.code, req.language, req.stdin)
     return result
 
 @app.get("/api/stats")
@@ -310,7 +311,7 @@ async def websocket_endpoint(websocket: WebSocket, session_id: str):
                 exec_code = data.get("code", "")
                 exec_lang = data.get("language", "python")
                 exec_stdin = data.get("stdin", "")
-                result = executor.execute(exec_code, exec_lang, exec_stdin)
+                result = await asyncio.to_thread(executor.execute, exec_code, exec_lang, exec_stdin)
                 exec_result = {
                     "type": "execution_result",
                     "user_id": user.id,
