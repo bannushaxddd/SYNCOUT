@@ -250,79 +250,75 @@ async def websocket_endpoint(websocket: WebSocket, session_id: str):
         }, exclude_user=user.id)
 
         # Main message loop
-        while True:
-            try:
-                data = await websocket.receive_json()
-        except Exception:
-            break
+while True:
+    try:
+        data = await websocket.receive_json()
+    except Exception:
+        break
 
-            msg_type = data.get("type")
+    msg_type = data.get("type")
 
-            # ── Code Operation ──────────────────
-            if msg_type == "operation":
-                op = Operation(
-                    type=data.get("op_type", "full_update"),
-                    position=data.get("position", 0),
-                    content=data.get("content", ""),
-                    length=data.get("length", 0),
-                    user_id=user.id,
-                    revision=data.get("revision", session.revision)
-                )
+    # ── Code Operation ──────────────────
+    if msg_type == "operation":
+        op = Operation(
+            type=data.get("op_type", "full_update"),
+            position=data.get("position", 0),
+            content=data.get("content", ""),
+            length=data.get("length", 0),
+            user_id=user.id,
+            revision=data.get("revision", session.revision)
+        )
 
-                success = manager.apply_operation(session, op)
+        success = manager.apply_operation(session, op)
 
-                if success:
-                    # Broadcast operation to all other users
-                    await manager.broadcast(session, {
-                        "type": "operation",
-                        "op_type": op.type,
-                        "position": op.position,
-                        "content": op.content,
-                        "length": op.length,
-                        "user_id": user.id,
-                        "user_name": user.name,
-                        "user_color": user.color,
-                        "revision": session.revision,
-                        "code": session.code  # Always send full code for reliability
-                    }, exclude_user=user.id)
+        if success:
+            await manager.broadcast(session, {
+                "type": "operation",
+                "op_type": op.type,
+                "position": op.position,
+                "content": op.content,
+                "length": op.length,
+                "user_id": user.id,
+                "user_name": user.name,
+                "user_color": user.color,
+                "revision": session.revision,
+                "code": session.code
+            }, exclude_user=user.id)
 
-            # ── Cursor Movement ─────────────────
-            elif msg_type == "cursor":
-                user.cursor_position = data.get("position", 0)
-                await manager.broadcast(session, {
-                    "type": "cursor",
-                    "user_id": user.id,
-                    "user_name": user.name,
-                    "user_color": user.color,
-                    "position": user.cursor_position,
-                    "line": data.get("line", 0),
-                    "column": data.get("column", 0)
-                }, exclude_user=user.id)
+    elif msg_type == "cursor":
+        user.cursor_position = data.get("position", 0)
+        await manager.broadcast(session, {
+            "type": "cursor",
+            "user_id": user.id,
+            "user_name": user.name,
+            "user_color": user.color,
+            "position": user.cursor_position,
+            "line": data.get("line", 0),
+            "column": data.get("column", 0)
+        }, exclude_user=user.id)
 
-            # ── Language Change ─────────────────
-            elif msg_type == "language":
-                session.language = data.get("language", "python")
-                await manager.broadcast(session, {
-                    "type": "language",
-                    "language": session.language,
-                    "user_id": user.id,
-                    "user_name": user.name
-                }, exclude_user=user.id)
+    elif msg_type == "language":
+        session.language = data.get("language", "python")
+        await manager.broadcast(session, {
+            "type": "language",
+            "language": session.language,
+            "user_id": user.id,
+            "user_name": user.name
+        }, exclude_user=user.id)
 
-            # ── Chat Message ────────────────────
-            elif msg_type == "chat":
-                await manager.broadcast(session, {
-                    "type": "chat",
-                    "user_id": user.id,
-                    "user_name": user.name,
-                    "user_color": user.color,
-                    "message": data.get("message", ""),
-                    "timestamp": time.time()
-                })  # Send to everyone including sender
+    elif msg_type == "chat":
+        await manager.broadcast(session, {
+            "type": "chat",
+            "user_id": user.id,
+            "user_name": user.name,
+            "user_color": user.color,
+            "message": data.get("message", ""),
+            "timestamp": time.time()
+        })
 
-            # ── Ping/Heartbeat ──────────────────
-            elif msg_type == "ping":
-                await websocket.send_json({"type": "pong"})
+    elif msg_type == "ping":
+        await websocket.send_json({"type": "pong"})
+
 
     except WebSocketDisconnect:
         logger.info(f"User {user.name if user else 'Unknown'} disconnected")
