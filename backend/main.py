@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(title="SYNCOUT", description="Real-time Collaborative Code Editor")
 app.mount("/static", StaticFiles(directory="frontend"), name="static")
-@api.get("/health")
+@app.get("/health")
 async def health():
     return {"status": "ok"}
 
@@ -345,4 +345,3 @@ async def websocket_endpoint(websocket: WebSocket, session_id: str):
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("main:app", host="0.0.0.0", port=8001, reload=True)
-from fastapi.responses import FileResponse
