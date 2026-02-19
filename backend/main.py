@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(title="SYNCOUT", description="Real-time Collaborative Code Editor")
 app.mount("/static", StaticFiles(directory="frontend"), name="static")
-@app.get("/health")
+@api.get("/health")
 async def health():
     return {"status": "ok"}
 
