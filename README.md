@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # ⚡ SYNCOUT — Pair Program with Anyone
 
 [![Python](https://img.shields.io/badge/Python-3.11-blue.svg)](https://www.python.org/)
@@ -295,4 +294,4 @@ MIT License — see [LICENSE](LICENSE) file
 
 ---
 
-*Built with ❤️ by Bannusha Shaik | Real-time collaboration powered by Operational Transform*
+*Built by Bannusha Shaik 
